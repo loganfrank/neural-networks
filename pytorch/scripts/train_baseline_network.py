@@ -4,8 +4,7 @@ import os
 import argparse
 import yaml
 import pickle
-sys.path.append(os.getcwd() + '/pytorch/')
-print(os.getcwd())
+sys.path.append(os.path.abspath(os.getcwd() + '/pytorch/'))
 
 ## Deep learning and array processing libraries
 import numpy as np 
