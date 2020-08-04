@@ -87,8 +87,8 @@ if __name__ == '__main__':
     val = np.hstack((val_classes, val_predictions, val_features))
     test = np.hstack((test_classes, test_predictions, test_features))
 
-    np.savetxt(f'{data_directory}{dataset}_val_features.csv', val, delimiter=',')
-    np.savetxt(f'{data_directory}{dataset}_test_features.csv', test, delimiter=',')
+    np.savetxt(f'{args["data_dir"]}{dataset}_val_features.csv', val, delimiter=',')
+    np.savetxt(f'{args["data_dir"]}{dataset}_test_features.csv', test, delimiter=',')
 
     plt.close('all')
 
