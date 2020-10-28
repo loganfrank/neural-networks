@@ -158,4 +158,101 @@ class MedianFilter(object):
         else:
             return image
 
+class Squeeze(object):
+    """
+    Squeezes the given PyTorch Tensor object
+    """
+    def __init__(self):
+        ...
+
+    def __call__(self, image):
+        if len(image.shape) == 4:
+            return image.squeeze_(0)
+        else:
+            return image
+
+class Unsqueeze(object):
+    """
+    Unsqueezes the given PyTorch Tensor object in axis=0
+    """
+    def __init__(self):
+        ...
+
+    def __call__(self, image):
+        if len(image.shape) == 3:
+            return image.unsqueeze_(0)
+        else:
+            return image
+
+class JPEGCompression(object):
+    """
+    Compresses the image using jpeg compression and restores
+    """
+    def __init__(self, quality=75):
+        self.quality = quality
+    
+    def __call__(self, image):
+        save = BytesIO()
+        image.save(save, 'JPEG', quality=self.quality)
+        image = Image.open(save)
+        return image
+
+class JPEGCompressionTorch(object):
+    """
+    Compresses the image using jpeg compression and restores
+    """
+    def __init__(self, quality=75):
+        self.quality = quality
+    
+    def __call__(self, image):
+        assert torch.is_tensor(image)
+        image = transforms.ToPILImage()(image.cpu().squeeze())
+        save = BytesIO()
+        image.save(save, 'JPEG', quality=self.quality)
+        image = transforms.ToTensor()(Image.open(save))
+        return (image.unsqueeze(0).cuda()).requires_grad_(True)
+
+class RandomResizeAndPadTorch(object):
+    """
+    Randomly resizes and pads an image.
+    """
+    def __init__(self, initial_size, final_size):
+        self.initial_size = initial_size
+        self.final_size = final_size
+        self.resize = F.interpolate
+        self.pad = F.pad
+
+    def __call__(self, image):
+        # image = image.unsqueeze(0)
+
+        # Resize the image
+        resize_shape = random.randint(self.initial_size, self.final_size)
+        image = self.resize(image, size=(resize_shape, resize_shape), mode='bilinear', align_corners=True)
+
+        # Determine how much to pad and do it
+        remainder = self.final_size - resize_shape
+        left = random.randint(0, remainder)
+        right = remainder - left
+        top = random.randint(0, remainder)
+        bottom = remainder - top
+        image = self.pad(image, pad=(left, right, top, bottom), mode='constant', value=0)
+
+        return image
+
+class Normalize(object):
+    """
+    Normalizes a batch of RGB images [n, 3, H, W]
+    """
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+    
+    def __call__(self, image):
+        if len(image.shape) == 3:
+            image = image.unsqueeze(0)
+        image[:, 0, :, :] = (image[:, 0, :, :] - self.mean[0]) / self.std[0]
+        image[:, 1, :, :] = (image[:, 1, :, :] - self.mean[1]) / self.std[1]
+        image[:, 2, :, :] = (image[:, 2, :, :] - self.mean[2]) / self.std[2]
+        image = image.squeeze()
+        return image
        

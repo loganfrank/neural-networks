@@ -53,12 +53,11 @@ class TrainingRecorder:
         self.parameters.epoch = epoch + 1
 
         # Save the network weights after each epoch
-        torch.save(network_dict, os.path.abspath(f'{self.network_directory}{self.experiment}/{self.experiment}_weights_epoch{epoch}.pth'))
+        torch.save(network_dict, os.path.abspath(f'{self.network_directory}{self.experiment}/{self.experiment}_weights_latest.pth'))
 
         # Save the parameter values to a file
         with open(os.path.abspath(f'{self.network_directory}{self.experiment}/{self.experiment}_parameters.pkl'), 'wb') as f:
             pickle.dump(self.parameters, f)
-
 
 class EvaluateRecorder:
     def __init__(self, results_directory, experiment, phase):
@@ -89,11 +88,11 @@ class EvaluateRecorder:
         # Save the resulting metrics to a file (if desired)
         if save:
             # Make the directory if it doesn't exist
-            if not os.path.exists(os.path.abspath(f'{self.results_directory}{self.experiment}/{self.experiment}')): 
-                os.makedirs(os.path.abspath(f'{self.results_directory}{self.experiment}/{self.experiment}'))
+            if not os.path.exists(os.path.abspath(f'{self.results_directory}{self.experiment}/')): 
+                os.makedirs(os.path.abspath(f'{self.results_directory}{self.experiment}/'))
 
             # Save the general accuracy, F1 score, and Cohen's Kappa score
-            with open(os.path.abspath(f'{self.results_directory}{self.experiment}/{self.experiment}/{self.experiment}_results_{self.phase}.txt'), 'w') as f:
+            with open(os.path.abspath(f'{self.results_directory}{self.experiment}/{self.experiment}_results_{self.phase}.txt'), 'w') as f:
                 f.write(f'Accuracy: {accuracy : 0.4f} \n')
                 f.write(f'Weighted Accuracy: {weighted_accuracy : 0.4f} \n')
                 f.write('Accuracy by class: \n')
@@ -114,7 +113,7 @@ class EvaluateRecorder:
             ax.set_title('Val Set Confusion Matrix')
             ax.set_xlabel('Predicted')
             ax.set_ylabel('Actual')
-            fig.savefig(os.path.abspath(f'{self.results_directory}{self.experiment}/{self.experiment}/{self.experiment}_confusion_matrix_{self.phase}.png'))
+            fig.savefig(os.path.abspath(f'{self.results_directory}{self.experiment}/{self.experiment}_confusion_matrix_{self.phase}.png'))
 
         if self.phase == 'val':
             return accuracy
