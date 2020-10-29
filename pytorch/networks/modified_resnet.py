@@ -183,10 +183,10 @@ class ResNet(nn.Module):
         x = self.leaky_relu(x)
         # x = self.maxpool(x)
 
-        x = self.layer1(x, batch_norm)
-        x = self.layer2(x, batch_norm)
-        x = self.layer3(x, batch_norm)
-        x = self.layer4(x, batch_norm)
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
 
         if self.cam:
             feature_maps = x.clone()
