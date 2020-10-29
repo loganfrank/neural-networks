@@ -127,7 +127,7 @@ class ResNet(nn.Module):
 
         self.relu = nn.ReLU(inplace=True)
         self.leaky_relu = nn.LeakyReLU(inplace=True)
-        # self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         self.layer1 = self._make_layer(block, 64, layers[0])
         self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
         self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
@@ -181,7 +181,7 @@ class ResNet(nn.Module):
         x = self.bn1(x)
 
         x = self.leaky_relu(x)
-        # x = self.maxpool(x)
+        x = self.maxpool(x)
 
         x = self.layer1(x, batch_norm)
         x = self.layer2(x, batch_norm)
